@@ -1,0 +1,37 @@
+==============
+    MANUAL    
+==============
+
++++++++++++
++ PARTE 1 +
++++++++++++
+
+RT1>enable 
+RT1#configure terminal 
+RT1(config)#ip access-list extended ACL
+RT1(config-ext-nacl)#deny tcp host 172.31.1.101 host 64.101.255.254 eq 80
+RT1(config-ext-nacl)#deny tcp host 172.31.1.101 host 64.101.255.254 eq 443
+RT1(config-ext-nacl)#deny tcp host 172.31.1.101 host 64.103.255.254 eq 80
+RT1(config-ext-nacl)#deny tcp host 172.31.1.101 host 64.103.255.254 eq 443
+RT1(config-ext-nacl)#deny tcp host 172.31.1.102 host 64.101.255.254 eq 21
+RT1(config-ext-nacl)#deny tcp host 172.31.1.102 host 64.103.255.254 eq 21
+RT1(config-ext-nacl)#deny icmp host 172.31.1.103 host 64.101.255.254
+RT1(config-ext-nacl)#deny icmp host 172.31.1.103 host 64.103.255.254
+RT1(config-ext-nacl)#permit ip any any
+RT1(config-ext-nacl)#end
+RT1#show running-config | begin access-list
+
+
++++++++++++
++ PARTE 2 +
++++++++++++
+
++ Obs: Limpeza de matches
+
+RT1>enable
+RT1#configure terminal
+RT1(config)#interface g0/0
+RT1(config-if)#ip access-group ACL in
+RT1#write
+RT1#clear access-list counters
+RT1#show ip access-lists

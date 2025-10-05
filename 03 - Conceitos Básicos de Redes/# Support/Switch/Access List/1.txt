@@ -1,0 +1,15 @@
++++++++
++ ACL +
++++++++
+
+switch_prod>enable
+switch_prod#configure terminal 
+switch_prod(config)#ip access-list standard superadmin
+switch_prod(config-std-nacl)#permit 172.24.0.254
+switch_prod(config-std-nacl)#exit
+switch_prod(config)#line vty 0 4
+switch_prod(config-line)#access-class superadmin in
+switch_prod(config-line)#transport input telnet 
+switch_prod(config-line)#end
+switch_prod#wr
+switch_prod#show access-lists

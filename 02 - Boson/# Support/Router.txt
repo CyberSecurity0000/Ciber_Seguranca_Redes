@@ -1,0 +1,159 @@
+==============
+    MANUAL        
+==============
+
+++++++++
++ HORA +
+++++++++
+
+Router>enable
+Router#show clock
+Router#clock set 17:20 09 Aug 2025
+
+
+++++++++++++
++ HOSTNAME +
+++++++++++++
+
+Router>enable
+Router#configure terminal
+Router(config)#hostname Boson
+Boson(config)#exit
+Boson#show running-config
+Boson#copy running-config startup-config
+
+
++++++++++++++
++ PASSWORDS +
++++++++++++++
+
++ Password Router        # Pass: pass
++ Password Console       # Pass: boson
++ Password Remotes (vty) # Pass: boson123
+
+Router>enable
+Router#configure terminal
+Router(config)#line console 0
+Router(config-line)#password boson
+Router(config-line)#login
+Router(config-line)#exec-timeout 5
+Router(config-line)#exit
+Router(config)#line vty 0 3
+Router(config-line)#password boson123
+Router(config-line)#exit
+Router(config)#enable password pass
+Router(config)#service password-encryption
+Router#show running-config
+Router#copy running-config startup-config
+
+
++++++++
++ SSH +
++++++++
+
+Router>enable
+Router#configure terminal 
+Router(config)#hostname R1
+R1(config)#ip domain-name bosontreinamentos.com
+R1(config)#username admin privilege 15 secret admin123
+R1(config)#crypto key generate rsa
+R1(config)#ip ssh version 2
+R1(config)#interface fastEthernet 0/0
+R1(config-if)#ip address 192.168.0.1 255.255.255.0
+R1(config-if)#no shutdown 
+R1(config-if)#exit
+R1(config)#line vty 0 4
+R1(config-line)#login local
+R1(config-line)#transport input ssh
+R1(config-line)#exit
+R1#copy running-config 
+R1#copy running-config startup-config 
+
+
+++++++++
++ DHCP +
+++++++++
+
++ Getway
++ Interface 9/0 (DHCP)
+
+Router>enable
+Router#configure terminal
+Router(config)#ip dhcp pool rede1
+Router(dhcp-config)#network 192.168.0.0 255.255.255.0
+Router(dhcp-config)#default-router 192.168.0.1
+Router(dhcp-config)#exit
+Router(config)#ip dhcp excluded-address 192.168.0.1
+
+Router(config)#interface fastEthernet 9/0
+Router(config-if)#ip address 192.168.0.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#do show ip interface brief
+Router(config-if)#exit
+Router(config)#exit
+
+Router#show ip interface brief
+Router#show running-config
+Router#copy running-config startup-config
+
+
+++++++++++++++
++ DNS SERVER +
+++++++++++++++
+
++ Necessita do DHCP configurado
++ As redes irão adquirir o endereço do DNSERVER
+
+Router>enable
+Router#show ip interface brief
+Router#configure terminal
+Router(config)#ip dhcp pool rede1
+Router(dhcp-config)#dns-server 209.245.12.2
+Router(dhcp-config)#exit
+
+Router#show running-config
+Router#copy running-config startup-config
+
+
++++++++++++++
++ INTERFACE +
++++++++++++++
+
++ Gateway
+
+Router>enable
+Router#show ip interface brief
+Router#configure terminal
+
+Router(config)#interface FastEthernet 0/0
+Router(config-if)#ip address 192.168.0.1 255.255.255.0
+Router(config-if)#do show ip interface brief
+Router(config-if)#no shutdown 
+Router(config-if)#exit
+Router(config)#exit
+
+Router#show ip interface brief
+Router#show running-config
+Router#copy running-config startup-config
+
+
++++++++++
++ ROTAS +
++++++++++
+
++ RIP Dinâmicas: 
+- Configuracoes nos 2 roteadores com suas respectivas redes internas e entre os roteadores
+
+Router>enable
+Router#configure terminal
+Router(config)#router rip 
+Router(config-router)#version 2
+Router(config-router)#no auto-summary 
+Router(config-router)#network 192.168.0.0
+Router(config-router)#network 209.245.12.0
+Router(config-router)#network 189.16.23.0
+Router(config-router)#exit
+Router(config)#exit
+Router#show ip route
+Router#show running-config
+Router#copy running-config startup-config

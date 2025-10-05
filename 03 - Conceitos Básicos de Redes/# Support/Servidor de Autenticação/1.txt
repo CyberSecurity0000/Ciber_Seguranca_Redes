@@ -1,0 +1,58 @@
+==============
+    MANUAL
+==============
+
+++++++
++ R2 +
+++++++
+
++ Senha (enable): ciscoenpa55
+
+R2(config)#username Admin2 secret admin2pa55
+R2(config)#tacacs-server host 192.168.2.2
+R2(config)#tacacs-server key tacacspa55
+R2(config)#aaa new-model
+R2(config)#aaa authentication login default group tacacs+ local
+R2(config)#line console 0
+R2(config-line)#login authentication default 
+R2(config-line)#exit
+R2(config)#line vty 0 4
+R2(config-line)#login authentication default 
+R2(config-line)#end
+R2#write 
+R2#show running-config
+
+
+++++++
++ R3 +
+++++++
+
++ Senha (enable): ciscoenpa55
+
+R3#configure terminal 
+R3(config)#username Admin3 secret admin3pa55
+R3(config)#radius-server host 192.168.3.2
+R3(config)#radius-server key radiuspa55
+R3(config)#aaa new-model 
+R3(config)#aaa authentication login default group radius local
+R3(config)#line console 0
+R3(config-line)#login authentication default 
+R3(config-line)#exit
+R3(config)#line vty
+R3(config)#line vty 0 4
+R3(config-line)#login authentication default 
+R3(config-line)#end
+R3#write 
+
+
+++++++++++
++ TESTES +
+++++++++++
+
+! TACACS+ (R2)
+Console: Username=Admin2 / Password=admin2pa55
+Telnet: PC-B → R2, deve autenticar via TACACS+
+
+! RADIUS (R3)
+Console: Username=Admin3 / Password=admin3pa55
+Telnet: PC-B → R3, deve autenticar via RADIUS

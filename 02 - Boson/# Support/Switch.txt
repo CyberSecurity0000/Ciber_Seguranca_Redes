@@ -1,0 +1,192 @@
+==============
+    MANUAL    
+==============
+
+++++++++
++ HORA +
+++++++++
+
+Switch>enable
+Switch#show clock
+Switch#clock set 23:36:00 Aug 7 2025
+Switch#show clock
+Switch#copy running-config startup-config
+
+
+++++++++++++
++ PASSWORD +
+++++++++++++
+
++ SENHA COM CRIPTOGRAFIA
+
+Switch>enable
+Switch#configure terminal 
+Switch(config)#enable secret boson123
+Switch(config)#exit
+Switch#show running-config 
+Switch#copy running-config startup-config
+
++ SENHA SEM CRIPTOGRAFIA
+
+Switch>enable
+Switch#configure terminal 
+Switch(config)#enable password boson123
+Switch(config)#exit
+Switch#show running-config 
+Switch#copy running-config startup-config
+
++ CRIPTOGRAFANDO
+
+Switch>enable
+Switch#configure terminal 
+Switch(config)#enable password boson123
+Switch(config)#service password-encryption
+Switch(config)#exit
+Switch#show running-config 
+Switch#copy running-config startup-config
+
+
++++++++++++++++++
++ PORTA CONSOLE +
++++++++++++++++++
+
+Switch>enable
+Switch#configure terminal 
+Switch(config)#line console 0
+Switch(config-line)#password boson
+Switch(config-line)#login
+Switch(config-line)#exit
+Switch(config)#service password-encryption
+Switch(config)#exit
+Switch#show running-config
+Switch#copy running-config startup-config
+
+
+++++++++++
++ TELNET +
+++++++++++
+
+# Telnet pela VLAN1
+Switch>enable
+Switch#configure terminal 
+Switch(config)#interface vlan1
+Switch(config-if)#ip address 192.168.0.100 255.255.255.0
+Switch(config-if)#no shutdown 
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#show running-config 
+Switch#copy running-config startup-config 
+
+# Line Vty abrindo 2 conexoes
+Switch>enable
+Switch#configure terminal 
+Switch(config)#line vty 0 1
+Switch(config-line)#password boson123
+Switch(config-line)#exit
+Switch(config)#service password-encryption
+Switch(config)#exit
+Switch#show running-config
+Switch#copy running-config startup-config
+
+
++++++++
++ SSH +
++++++++
+
++ Line Vty abrindo 5 conexoes
+
+Switch>enable
+Switch#configure terminal 
+Switch(config)#interface vlan1
+Switch(config-if)#ip address 192.168.0.100 255.255.255.0
+Switch(config-if)#no shutdown 
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#show running-config 
+Switch#copy running-config startup-config 
+
+Switch>enable
+Switch#configure terminal
+Switch(config)#hostname Boson
+Boson(config)#username admin privilege 15 secret admin123
+Boson(config)#ip domain-name bosontreinamentos.com
+Boson(config)#crypto key generate rsa
+Boson(config)#ip ssh version 2
+Boson(config)#line vty 0 4
+Boson(config-line)#login local
+Boson(config-line)#transport input ssh
+Boson(config-line)#exit
+Boson(config)#exit
+Switch#show running-config
+Switch#copy running-config startup-config
+
+
+++++++++
++ VLAN +
+++++++++
+
++ Obs: Criando 2 Vlans 1 Switch
+
+Switch>enable 
+Switch#configure terminal 
+Switch(config)#vlan 10
+Switch(config-vlan)#name mkt
+Switch(config-vlan)#exit
+Switch(config)#vlan 11 
+Switch(config-vlan)#name fin
+Switch(config-vlan)#exit
+Switch(config)#interface range fastEthernet 0/1 - 10
+Switch(config-if-range)#switchport mode access 
+Switch(config-if-range)#switchport access vlan 10
+Switch(config-if-range)#no shutdown
+Switch(config-if-range)#exit
+Switch(config)#interface range fastEthernet 0/11 - 20
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 11
+Switch(config-if-range)#no shutdown
+Switch(config-if-range)#exit
+Switch(config)#exit
+Switch#show vlan brief
+Switch#show running-config
+Switch#copy running-config startup-config
+
+
++++++++++++
++ 2 VLANS +
++++++++++++
+
++ Obs: Port Trunk
+
+Switch>enable 
+Switch#configure terminal 
+Switch(config)#vlan 10
+Switch(config-vlan)#name lab-1
+Switch(config-vlan)#exit
+Switch(config)#vlan 20
+Switch(config-vlan)#name lab-2
+Switch(config-vlan)#exit
+Switch(config)#interface range fastEthernet 0/1 - 10
+Switch(config-if-range)#switchport mode access 
+Switch(config-if-range)#switchport access vlan 10
+Switch(config-if-range)#no shutdown 
+Switch(config-if-range)#exit
+Switch(config)#interface range fastEthernet 0/11 - 23
+Switch(config-if-range)#switchport mode access 
+Switch(config-if-range)#switchport access vlan 20
+Switch(config-if-range)#no shutdown 
+Switch(config-if-range)#exit
+Switch(config)#exit
+Switch#show vlan brief 
+Switch#show running-config
+Switch#copy running-config startup-config
+
+# Porta Trunk
+Switch>enable 
+Switch#configure terminal 
+Switch(config)#interface fastEthernet 0/24
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#no shutdown
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#show interfaces trunk
+Switch#copy running-config  startup-config 

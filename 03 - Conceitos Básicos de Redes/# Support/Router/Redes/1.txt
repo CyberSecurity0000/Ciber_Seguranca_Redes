@@ -1,0 +1,165 @@
+==============
+    MANUAL    
+==============
+
+++++++++++++
++ HOSTNAME +
+++++++++++++
+
+Router>enable 
+Router#configure terminal 
+Router#hostname Edge_Router_Backup
+Router#wr
+Router#show running-config 
+Router#exit
+
+
++++++++++++++
++ INTERFACE +
++++++++++++++
+
++ Obs: Ip fixo para a interface do roteador
+
+Router>enable
+Router#configure terminal
+Router(config)#interface fastEthernet 1/0
+Router(config-if)#ip address 10.0.0.1 255.0.0.0
+Router(config-if)#no shutdown 
+Router(config-if)#end
+Router#wr
+Router#show running-config 
+Router#exit
+
+
+++++++++
++ DHCP +
+++++++++
+
++ Obs: Rede (10.0.0.1/8)
++ Obs: Rede (172.16.0.0/16)
++ Obs: Rede (192.168.0.1/24)
+
+Router>enable
+Router#configure terminal 
+Router(config)#ip dhcp pool rede10
+Router(dhcp-config)#network 10.0.0.0 255.0.0.0
+Router(dhcp-config)#end
+Router#wr
+Router#show running-config 
+Router#exit
+
+
++++++++++++
++ GATEWAY +
++++++++++++
+
++ Obs: IP Gateway para DHCP
+
+Router>enable 
+Router#configure terminal
+Router(config)#ip dhcp pool rede10
+Router(dhcp-config)#network 10.0.0.0 255.0.0.0
+Router(dhcp-config)#default-router 10.0.0.1
+Router(dhcp-config)#end
+Router#wr
+Router#show running-config 
+Router#exit
+
+
++++++++++++++++++
++ ROTA ESTÁTICA +
++++++++++++++++++
+
++ Obs: Configuracao de ida e volta
+
++ Obs: 0.0.0.0 0.0.0.0 <PROXIMO ROTEADOR - R2>
+Router#configure terminal 
+Router(config)#ip route 0.0.0.0 0.0.0.0 209.165.201.1
+Router(config)#end
+Router#wr
+Router#show running-config 
+Router#exit
+
++ Obs: 0.0.0.0 0.0.0.0 <ROTEADOR ANTERIOR - R1>
+Router#enable 
+Router#configure terminal 
+Router(config)#ip route 0.0.0.0 0.0.0.0 209.165.201.2
+Router(config)#end
+Router#wr
+Router#show running-config 
+Router#exit
+
+
++++++++
++ SSH +
++++++++
+
++ Obs: Configurar IP público anteriormente para o roteador (ver rotas)
+
+Router>enable 
+Router#configure terminal 
+Router(config)#username Diego password cisco1
+Router(config)#enable secret cisco2
+Router(config)#hostname CENTRAL
+CENTRAL(config)#ip domain-name CYBERSECURITY.NET
+CENTRAL(config)#ip ssh version 2
+CENTRAL(config)#crypto key generate rsa
+CENTRAL(config)#line vty 0 15
+CENTRAL(config-line)#transport input ssh
+CENTRAL(config-line)#login local
+CENTRAL(config-line)#end
+CENTRAL#wr
+CENTRAL#show running-config
+
+# Entrada
+ssh -l Diego 209.165.201.2
+
+
++++++++++++
++ NETFLOW +
++++++++++++
+
++ Monitoramento do tráfego
+
+CENTRAL>enable 
+CENTRAL#configure terminal
+CENTRAL(config)#ip flow-export version 9
+CENTRAL(config)#interface fastEthernet 4/0
+CENTRAL(config-if)#ip flow ingress
+CENTRAL(config)#exit
+CENTRAL(config)#interface fastEthernet 5/0
+CENTRAL(config-if)#ip flow ingress
+CENTRAL(config)#exit 
+CENTRAL(config)#ip flow-export destination 192.168.127.254 9996
+CENTRAL(config)#exit
+CENTRAL#wr
+CENTRAL#show running-config
+
+
+++++++++++
++ SYSLOG +
+++++++++++
+
++ Comandos feitos para analisar comportamento do roteador
++ Obs: Fazer a configuração em NETFLOW antes
+
+CENTRAL#configure terminal 
+CENTRAL(config)#service timestamps log datetime msec 
+CENTRAL(config)#logging 192.168.127.254
+CENTRAL(config)#logging trap debugging 
+CENTRAL(config)#do show logging
+CENTRAL(config)#exit
+CENTRAL#wr
+CENTRAL#show running-config
+
++ Teste no Servidor
+
+CENTRAL>enable
+CENTRAL#configure terminal 
+CENTRAL(config)#interface gigabitEthernet 0/0
+CENTRAL(config-if)#shutdown
+CENTRAL(config)#interface gigabitEthernet 0/0
+CENTRAL(config-if)#no shutdown
+CENTRAL(config-if)#end
+CENTRAL#wr
+CENTRAL#show running-config

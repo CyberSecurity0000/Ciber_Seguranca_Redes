@@ -1,0 +1,49 @@
+==============
+    MANUAL    
+==============
+
+++++++++++++
++ HOSTNAME +
+++++++++++++
+
+Switch>enable
+Switch#configure terminal 
+Switch(config)#hostname switch_adm
+switch_adm(config)#exit
+switch_adm#wr
+switch_adm#show running-config
+switch_admin#exit
+
+
+++++++++++
++ TELNET +
+++++++++++
+
++ PASS0 1: Senha do Telnet (5 conexões)
+
+Switch>enable 
+Switch#configure terminal 
+Switch(config)#line vty 0 4
+Switch(config-line)#password cisco
+Switch(config-line)#login
+Switch(config-line)#transport input telnet
+Switch(config-line)#exit
+Switch(config)#enable password cisco
+Switch(config)#end
+Switch#wr
+Switch#show running-config
+Switch#reload
+
++ PASSO 2: Telnet pela VLAN1
+
+Switch>enable 
+Switch#configure terminal 
+Switch(config)#interface vlan 1
+Switch(config-if)#ip address 10.0.0.100 255.0.0.0
+Switch(config-if)#no shutdown 
+Switch(config-if)#exit
+Switch(config)#ip default-gateway 10.0.0.1
+Switch(config)#end
+Switch#wr
+Switch#show running-config
+Switch#exit
